@@ -281,6 +281,13 @@ canvas{display:block;width:100%!important;}
       <div class="wfrow"><div class="wfico">🔒</div><div><div class="wftx">100% private</div><div class="wfsub">Everything stays on your device — no accounts, no servers</div></div></div>
     </div>
     <button class="wnextbtn" onclick="wNext()">Get Started →</button>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #1f2a3c;text-align:center;">
+      <div style="font-size:12px;color:#4a70aa;margin-bottom:8px;">Already have a backup from another device?</div>
+      <label style="display:inline-block;position:relative;cursor:pointer;">
+        <input type="file" accept=".json" onchange="importFromWizard(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;"/>
+        <div style="background:#1a2540;border:1px solid #2a3a5c;color:#7a9fd4;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">📥 Import Backup</div>
+      </label>
+    </div>
   </div>
   <!-- Step 1: Budget -->
   <div class="wizpage" id="wz1">
@@ -596,9 +603,11 @@ canvas{display:block;width:100%!important;}
   <div style="background:#111827;border-radius:20px 20px 0 0;padding:20px 20px 40px;width:100%;max-width:430px;margin:0 auto;border-top:1px solid #2a3a5c;">
     <div style="font-size:16px;font-weight:800;margin-bottom:4px;" id="editCatDesc"></div>
     <div style="font-size:12px;color:#4a70aa;margin-bottom:16px;" id="editCatMeta"></div>
-    <label class="flbl">Change Category</label>
+    <label class="flbl">Amount ($)</label>
+    <input type="text" inputmode="decimal" id="editAmtInput" class="fi" placeholder="0.00" style="margin-bottom:12px;"/>
+    <label class="flbl">Category</label>
     <select class="fsel" id="editCatSel" style="margin-bottom:16px;"></select>
-    <button class="subbtn" onclick="saveEditCat()">Save Change</button>
+    <button class="subbtn" onclick="saveEditCat()">Save Changes</button>
     <button onclick="closeEditCat()" style="width:100%;background:transparent;border:none;color:#4a70aa;padding:12px;font-size:14px;cursor:pointer;margin-top:6px;">Cancel</button>
   </div>
 </div>
@@ -1121,11 +1130,11 @@ function rCatD(){
   const pendTxns=loadPending().filter(p=>p.catId===selCat&&p.date.slice(0,7)===curM).sort((a,b)=>b.date.localeCompare(a.date));
   const ct=txns.filter(t=>t.catId===selCat).sort((a,b)=>b.date.localeCompare(a.date));
   let h="";
-  pendTxns.forEach(pt=>{h+=`<div class="trow" style="border-left:3px solid #f59e0b;padding-left:9px;">
+  pendTxns.forEach(pt=>{h+=`<div class="trow" style="border-left:3px solid #f59e0b;padding-left:9px;cursor:pointer;" onclick="openEditPending('${pt.id}')">
     <div><div class="tdesc">${pt.desc}</div><div class="tdt">${pt.date} <span style="color:#f59e0b;font-weight:700">🕐 PENDING</span></div></div>
-    <div class="tr2"><div class="tamt" style="color:#f59e0b">${fmt(pt.amount)}</div><button class="dico" onclick="deletePendingTx('${pt.id}');showToast('Pending removed','w');rCatD();rDash();">✕</button></div></div>`;});
-  ct.forEach(t=>{h+=`<div class="trow"><div><div class="tdesc">${t.desc}</div><div class="tdt">${t.date}</div></div>
-    <div class="tr2"><div class="tamt">${fmt(t.amount)}</div><button class="dico" onclick="delT('${t.id}','${curM}')">✕</button></div></div>`;});
+    <div class="tr2"><div class="tamt" style="color:#f59e0b">${fmt(pt.amount)}</div><button class="dico" onclick="event.stopPropagation();deletePendingTx('${pt.id}');showToast('Pending removed','w');rCatD();rDash();">✕</button></div></div>`;});
+  ct.forEach(t=>{h+=`<div class="trow" onclick="openEditCat('${t.id}','${curM}')" style="cursor:pointer"><div><div class="tdesc">${t.desc}</div><div class="tdt">${t.date}</div></div>
+    <div class="tr2"><div class="tamt">${fmt(t.amount)}</div><button class="dico" onclick="event.stopPropagation();delT('${t.id}','${curM}')">✕</button></div></div>`;});
   if(!h)h="<div class='empty'>No transactions yet</div>";
   document.getElementById("cdTx").innerHTML=h;
 }
@@ -1467,7 +1476,7 @@ function rPendList(){
   let html="";
   sorted.forEach(p=>{
     const cat=cats.find(c=>c.id===p.catId);
-    html+=`<div class="pend-row">
+    html+=`<div class="pend-row" onclick="openEditPending('${p.id}')" style="cursor:pointer">
       <div class="pend-ico">${cat?.icon||"🕐"}</div>
       <div class="pend-inf">
         <div class="pend-desc">${p.desc}</div>
@@ -1475,7 +1484,7 @@ function rPendList(){
         <span class="pend-badge">PENDING</span>
       </div>
       <div class="pend-amt">${fmt(p.amount)}</div>
-      <button class="pend-del" onclick="deletePendingTx('${p.id}');showToast('Removed','w');rPendList();rDash();">✕</button>
+      <button class="pend-del" onclick="event.stopPropagation();deletePendingTx('${p.id}');showToast('Removed','w');rPendList();rDash();">✕</button>
     </div>`;
   });
   document.getElementById("pendList").innerHTML=html;
@@ -1577,10 +1586,11 @@ function openEditCat(id,month){
   const txns=loadT(month);
   const t=txns.find(x=>x.id===id);
   if(!t)return;
-  _editTxId=id;_editTxMonth=month;
+  _editTxId=id;_editTxMonth=month;_editPendId=null;
   const cats=getCats();
   document.getElementById("editCatDesc").textContent=t.desc;
-  document.getElementById("editCatMeta").textContent=`${t.date} · ${fmt(t.amount)}`;
+  document.getElementById("editCatMeta").textContent=t.date;
+  document.getElementById("editAmtInput").value=t.amount;
   const sel=document.getElementById("editCatSel");
   sel.innerHTML=cats.map(c=>`<option value="${c.id}" ${c.id===t.catId?"selected":""}>${c.icon} ${c.name}</option>`).join("");
   const modal=document.getElementById("editCatModal");
@@ -1588,24 +1598,44 @@ function openEditCat(id,month){
 }
 function closeEditCat(){
   document.getElementById("editCatModal").style.display="none";
-  _editTxId=null;_editTxMonth=null;
+  _editTxId=null;_editTxMonth=null;_editPendId=null;
 }
 function saveEditCat(){
+  if(_editPendId){
+    const pending=loadPending();
+    const p=pending.find(x=>x.id===_editPendId);
+    if(p){
+      const newAmt=parseAmt(document.getElementById("editAmtInput").value);
+      if(!isNaN(newAmt)&&newAmt>0)p.amount=newAmt;
+      p.catId=document.getElementById("editCatSel").value;
+      savePending(pending);
+      showToast("Pending updated ✅");
+    }
+    _editPendId=null;
+    closeEditCat();
+    rPendList();
+    if(curS==="category")rCatD();
+    rDash();
+    return;
+  }
   if(!_editTxId)return;
   const txns=loadT(_editTxMonth);
   const t=txns.find(x=>x.id===_editTxId);
   if(t){
+    const newAmt=parseAmt(document.getElementById("editAmtInput").value);
+    if(!isNaN(newAmt)&&newAmt>0)t.amount=newAmt;
     t.catId=document.getElementById("editCatSel").value;
     saveT(_editTxMonth,txns);
     // Update learned mapping too
     const maps=getMaps();
     maps[normMerchant(t.desc)]=t.catId;
     saveMaps(maps);
-    showToast("Category updated ✅");
+    showToast("Transaction updated ✅");
   }
   closeEditCat();
   rTxList();
-  if(curS==="dashboard")rDash();
+  if(curS==="category")rCatD();
+  rDash();
 }
 
 // ── INLINE BUDGET EDIT ────────────────────────────────────────────────────
@@ -1758,10 +1788,58 @@ function doRestoreBackup(){
     if(data.pending)sset("pending",data.pending);
     const months=Object.keys(data.transactions).sort();
     if(months.length)curM=months[months.length-1];
+    refreshCatDropdown();
     showToast("✅ Backup restored!");
     buildMsel();
     go("dashboard");
   }catch(err){showToast("Error restoring backup","w");console.error(err);}
+}
+
+let _editPendId=null;
+function openEditPending(id){
+  const pending=loadPending();
+  const p=pending.find(x=>x.id===id);
+  if(!p)return;
+  _editPendId=id;
+  document.getElementById("editCatDesc").textContent=p.desc;
+  document.getElementById("editCatMeta").textContent=`${p.date} · PENDING`;
+  document.getElementById("editAmtInput").value=p.amount;
+  const cats=getCats();
+  const sel=document.getElementById("editCatSel");
+  sel.innerHTML=cats.map(c=>`<option value="${c.id}" ${c.id===p.catId?"selected":""}>${c.icon} ${c.name}</option>`).join("");
+  document.getElementById("editCatModal").style.display="flex";
+}
+function refreshCatDropdown(){
+  const fcs=document.getElementById("fCat");
+  fcs.innerHTML="";
+  getCats().forEach(c=>{const o=document.createElement("option");o.value=c.id;o.textContent=`${c.icon} ${c.name}`;fcs.appendChild(o);});
+}
+
+function importFromWizard(input){
+  const file=input.files[0];if(!file)return;input.value="";
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.version||!data.cats||!data.transactions){showToast("Invalid backup file","w");return;}
+      saveCats(data.cats);
+      saveMaps(data.maps||{});
+      if(data.setup){data.setup.setupDone=true;sset("setup",data.setup);}
+      else{const s=sget("setup",{});s.setupDone=true;sset("setup",s);}
+      Object.entries(data.transactions).forEach(([m,txns])=>saveT(m,txns));
+      if(data.income)Object.entries(data.income).forEach(([m,arr])=>saveInc(m,arr));
+      if(data.pending)sset("pending",data.pending);
+      const months=Object.keys(data.transactions).sort();
+      if(months.length)curM=months[months.length-1];
+      refreshCatDropdown();
+      buildMsel();
+      document.getElementById("wiz").classList.remove("active");
+      document.getElementById("bnav").style.display="flex";
+      showToast("✅ Backup restored!");
+      go("dashboard");
+    }catch(err){showToast("Error reading backup file","w");console.error(err);}
+  };
+  reader.readAsText(file);
 }
 
 // ── CHARTS ────────────────────────────────────────────────────────────────
