@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#0a0e17"/>
+<meta name="description" content="Steppe — Always know where you stand. A completely private budget tracker. No accounts. No subscriptions. No servers. Your data never leaves your device."/>
+<title>Steppe — Always Know Where You Stand</title>
+<link rel="icon" href="icons/icon-192.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:      #0a0e17;
+    --bg2:     #0d1220;
+    --bg3:     #111827;
+    --border:  #1c2333;
+    --border2: #2a3347;
+    --gold:    #fbbf24;
+    --gold2:   #f59e0b;
+    --gold-dim:#78350f;
+    --earth:   #92400e;
+    --text:    #f0e6d2;
+    --text2:   #9a8a6a;
+    --text3:   #6a5a3a;
+    --sky:     #3b82f6;
+    --green:   #22c55e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'DM Sans',sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::after{
+    content:'';
+    position:fixed;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events:none;z-index:9999;opacity:.5;
+  }
+
+  /* ── NAV ── */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    padding:16px 28px;
+    display:flex;align-items:center;justify-content:space-between;
+    background:rgba(10,14,23,.88);
+    backdrop-filter:blur(24px);
+    border-bottom:1px solid var(--border);
+  }
+  .logo{
+    font-family:'Syne',sans-serif;
+    font-weight:800;font-size:22px;
+    color:var(--gold);
+    letter-spacing:-1px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .logo-mark{
+    width:28px;height:28px;
+    background:linear-gradient(160deg,#1a1205,#2a1a05);
+    border:1px solid var(--gold-dim);
+    border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:800;color:var(--gold);
+    font-family:'Syne',sans-serif;
+  }
+  .nav-right{display:flex;align-items:center;gap:10px;}
+  .btn-nav-ghost{
+    background:transparent;border:1px solid var(--border2);
+    color:var(--text2);border-radius:10px;
+    padding:7px 16px;font-size:13px;font-weight:500;
+    cursor:pointer;text-decoration:none;
+    font-family:'DM Sans',sans-serif;transition:all .2s;
+  }
+  .btn-nav-ghost:hover{border-color:var(--gold2);color:var(--gold);}
+  .btn-nav-cta{
+    background:linear-gradient(135deg,var(--gold-dim),var(--earth));
+    border:1px solid rgba(251,191,36,.25);
+    color:var(--gold);border-radius:10px;
+    padding:7px 18px;font-size:13px;font-weight:700;
+    cursor:pointer;text-decoration:none;
+    font-family:'DM Sans',sans-serif;transition:all .2s;
+  }
+  .btn-nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(251,191,36,.15);}
+
+  /* ── HERO ── */
+  .hero{
+    position:relative;min-height:100vh;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:110px 24px 60px;
+    text-align:center;overflow:hidden;
+  }
+
+  /* Horizon glow */
+  .horizon-glow{
+    position:absolute;
+    left:0;right:0;
+    top:58%;height:2px;
+    background:linear-gradient(90deg,transparent,rgba(251,191,36,.4) 20%,rgba(251,191,36,.7) 50%,rgba(251,191,36,.4) 80%,transparent);
+    box-shadow:0 0 60px 20px rgba(251,191,36,.12);
+    pointer-events:none;
+  }
+  .sky-glow{
+    position:absolute;
+    width:700px;height:400px;
+    background:radial-gradient(ellipse,rgba(251,191,36,.07) 0%,transparent 65%);
+    top:20%;left:50%;transform:translateX(-50%);
+    pointer-events:none;
+  }
+  .ground-glow{
+    position:absolute;
+    width:800px;height:200px;
+    background:radial-gradient(ellipse,rgba(120,53,15,.2) 0%,transparent 70%);
+    top:56%;left:50%;transform:translateX(-50%);
+    pointer-events:none;
+  }
+
+  .hero-eyebrow{
+    display:inline-flex;align-items:center;gap:7px;
+    background:rgba(251,191,36,.08);
+    border:1px solid rgba(251,191,36,.2);
+    border-radius:999px;padding:5px 16px;
+    font-size:11px;font-weight:600;
+    color:var(--gold2);letter-spacing:1.5px;
+    text-transform:uppercase;margin-bottom:32px;
+    animation:fadeUp .6s ease both;
+  }
+  .hero-eyebrow-dot{
+    width:5px;height:5px;border-radius:50%;
+    background:var(--gold2);
+  }
+
+  h1{
+    font-family:'Syne',sans-serif;
+    font-size:clamp(2.6rem,8vw,5.5rem);
+    font-weight:800;line-height:1.02;
+    letter-spacing:-3px;margin-bottom:10px;
+    animation:fadeUp .6s .08s ease both;
+  }
+  .h1-line2{
+    display:block;
+    background:linear-gradient(135deg,var(--gold) 0%,#f97316 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  .hero-tagline{
+    font-family:'DM Sans',sans-serif;
+    font-size:clamp(1rem,2.5vw,1.25rem);
+    color:var(--text2);font-style:italic;
+    margin-bottom:32px;
+    animation:fadeUp .6s .15s ease both;
+  }
+  .hero-sub{
+    font-size:clamp(.95rem,2vw,1.1rem);
+    color:var(--text2);max-width:500px;
+    margin:0 auto 44px;line-height:1.75;
+    animation:fadeUp .6s .2s ease both;
+  }
+  .hero-cta{
+    display:flex;flex-wrap:wrap;gap:12px;
+    justify-content:center;
+    animation:fadeUp .6s .28s ease both;
+  }
+  .btn-hero-primary{
+    background:linear-gradient(135deg,#78350f,#92400e);
+    border:1px solid rgba(251,191,36,.3);
+    color:var(--gold);border-radius:14px;
+    padding:15px 32px;font-size:15px;font-weight:700;
+    cursor:pointer;text-decoration:none;
+    font-family:'Syne',sans-serif;
+    transition:all .25s;
+    box-shadow:0 0 40px rgba(251,191,36,.1);
+    letter-spacing:-.3px;
+  }
+  .btn-hero-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 32px rgba(251,191,36,.2);
+  }
+  .btn-hero-secondary{
+    background:transparent;
+    border:1px solid var(--border2);
+    color:var(--text2);border-radius:14px;
+    padding:15px 28px;font-size:15px;font-weight:400;
+    cursor:pointer;text-decoration:none;
+    font-family:'DM Sans',sans-serif;
+    transition:all .25s;
+  }
+  .btn-hero-secondary:hover{border-color:var(--text2);color:var(--text);}
+
+  /* Trust strip */
+  .trust-strip{
+    display:flex;flex-wrap:wrap;gap:20px 32px;
+    justify-content:center;margin-top:56px;
+    animation:fadeUp .6s .35s ease both;
+  }
+  .trust-item{
+    display:flex;align-items:center;gap:7px;
+    font-size:12px;color:var(--text3);font-weight:400;
+    letter-spacing:.3px;
+  }
+  .trust-rule{
+    width:4px;height:4px;border-radius:50%;
+    background:var(--gold2);opacity:.6;
+  }
+
+  /* Phone mockup */
+  .mockup-outer{
+    margin-top:80px;
+    position:relative;
+    display:flex;justify-content:center;
+    animation:fadeUp .7s .42s ease both;
+  }
+  .mockup-outer::before{
+    content:'';position:absolute;
+    bottom:-20px;left:50%;transform:translateX(-50%);
+    width:200px;height:40px;
+    background:radial-gradient(ellipse,rgba(251,191,36,.15),transparent);
+    pointer-events:none;
+  }
+  .phone{
+    width:255px;
+    background:var(--bg2);
+    border:1.5px solid rgba(251,191,36,.15);
+    border-radius:38px;padding:13px;
+    box-shadow:
+      0 50px 100px rgba(0,0,0,.7),
+      0 0 0 1px rgba(255,255,255,.03),
+      inset 0 1px 0 rgba(255,255,255,.04);
+    position:relative;overflow:hidden;
+  }
+  .phone-notch{
+    position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:72px;height:20px;
+    background:var(--bg);border-radius:0 0 14px 14px;z-index:5;
+  }
+  .screen{
+    background:var(--bg);border-radius:28px;
+    padding:30px 11px 11px;min-height:460px;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  /* mini dashboard elements */
+  .s-lbl{font-size:9px;color:var(--text3);font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .s-big{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--text);letter-spacing:-1px;line-height:1;}
+  .s-sub{font-size:10px;color:var(--text3);margin-top:1px;}
+  .s-bar{height:4px;background:var(--border);border-radius:999px;overflow:hidden;margin:6px 0 10px;}
+  .s-fill{height:100%;border-radius:999px;background:var(--gold2);width:62%;}
+  .s-cards{display:flex;gap:7px;}
+  .s-card{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:8px 9px;}
+  .s-card-l{font-size:8px;color:var(--text3);font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+  .s-card-v{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;margin-top:2px;}
+  .s-cat{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:8px 9px;display:flex;align-items:center;gap:7px;}
+  .s-cat-i{font-size:15px;flex-shrink:0;}
+  .s-cat-n{font-size:10px;font-weight:600;color:var(--text);}
+  .s-cat-b{height:3px;background:var(--border);border-radius:999px;overflow:hidden;margin-top:3px;}
+  .s-cat-f{height:100%;border-radius:999px;}
+  .s-cat-a{font-size:10px;font-weight:700;flex-shrink:0;margin-left:auto;}
+
+  /* ── SECTIONS ── */
+  .section{position:relative;padding:80px 24px;max-width:1060px;margin:0 auto;}
+  .s-eyebrow{
+    font-size:10px;font-weight:700;letter-spacing:2px;
+    text-transform:uppercase;color:var(--gold2);margin-bottom:12px;
+  }
+  .s-title{
+    font-family:'Syne',sans-serif;
+    font-size:clamp(1.7rem,4vw,2.6rem);
+    font-weight:800;letter-spacing:-1.5px;
+    line-height:1.08;margin-bottom:14px;
+  }
+  .s-desc{font-size:1rem;color:var(--text2);max-width:480px;line-height:1.75;}
+
+  /* ── ORIGIN STORY ── */
+  .origin-box{
+    margin-top:40px;
+    background:linear-gradient(135deg,rgba(120,53,15,.12),rgba(10,14,23,.8));
+    border:1px solid rgba(251,191,36,.12);
+    border-radius:24px;padding:36px 32px;
+    position:relative;overflow:hidden;
+  }
+  .origin-box::before{
+    content:'"';
+    position:absolute;top:-10px;left:20px;
+    font-family:'Syne',sans-serif;
+    font-size:120px;font-weight:800;
+    color:rgba(251,191,36,.06);
+    line-height:1;pointer-events:none;
+  }
+  .origin-text{
+    font-size:1.05rem;color:var(--text2);
+    line-height:1.85;font-style:italic;
+    max-width:600px;
+  }
+  .origin-text strong{color:var(--gold);font-style:normal;}
+
+  /* ── FEATURES ── */
+  .feat-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+    gap:14px;margin-top:44px;
+  }
+  .feat-card{
+    background:var(--bg2);border:1px solid var(--border);
+    border-radius:18px;padding:26px;
+    transition:border-color .2s,transform .2s;
+    position:relative;overflow:hidden;
+  }
+  .feat-card::after{
+    content:'';position:absolute;
+    top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(251,191,36,.1),transparent);
+  }
+  .feat-card:hover{border-color:rgba(251,191,36,.2);transform:translateY(-3px);}
+  .feat-icon{font-size:26px;margin-bottom:12px;display:block;}
+  .feat-title{
+    font-family:'Syne',sans-serif;
+    font-size:15px;font-weight:700;
+    color:var(--text);margin-bottom:7px;
+  }
+  .feat-desc{font-size:13px;color:var(--text2);line-height:1.65;}
+
+  /* ── COMPARISON ── */
+  .table-wrap{margin-top:44px;overflow-x:auto;border-radius:16px;border:1px solid var(--border);}
+  table{width:100%;border-collapse:collapse;}
+  thead th{
+    padding:14px 18px;text-align:left;
+    font-size:10px;font-weight:700;letter-spacing:1.5px;
+    text-transform:uppercase;color:var(--text3);
+    background:var(--bg2);
+    border-bottom:1px solid var(--border);
+  }
+  thead th.col-steppe{color:var(--gold2);}
+  tbody td{
+    padding:13px 18px;font-size:13px;
+    border-bottom:1px solid var(--border);
+    color:var(--text2);
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody td.col-feat{color:var(--text);font-weight:500;}
+  tbody td.col-steppe{color:var(--text);}
+  .yes{color:var(--green);font-weight:700;}
+  .no{color:#ef4444;}
+  tbody tr:hover td{background:rgba(255,255,255,.015);}
+
+  /* ── HOW TO INSTALL ── */
+  .install-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:14px;margin-top:40px;
+  }
+  .install-card{
+    background:var(--bg2);border:1px solid var(--border);
+    border-radius:16px;padding:20px 22px;
+  }
+  .install-platform{
+    font-size:11px;font-weight:700;letter-spacing:1px;
+    text-transform:uppercase;color:var(--text3);
+    margin-bottom:14px;display:flex;align-items:center;gap:6px;
+  }
+  .install-steps-list{list-style:none;padding:0;}
+  .install-steps-list li{
+    font-size:13px;color:var(--text2);
+    margin-bottom:8px;line-height:1.5;
+    display:flex;gap:8px;align-items:flex-start;
+  }
+  .install-steps-list li::before{
+    content:attr(data-n);
+    font-family:'Syne',sans-serif;
+    font-size:11px;font-weight:700;
+    color:var(--gold2);
+    background:rgba(251,191,36,.1);
+    border-radius:5px;padding:1px 6px;
+    flex-shrink:0;margin-top:1px;
+  }
+  .install-steps-list li strong{color:var(--text);}
+
+  /* ── PRIVACY ── */
+  .privacy-panel{
+    background:var(--bg2);border:1px solid var(--border);
+    border-radius:24px;padding:40px 36px;
+    margin-top:40px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:28px;
+  }
+  @media(max-width:600px){.privacy-panel{grid-template-columns:1fr;}}
+  .priv-item{display:flex;gap:14px;align-items:flex-start;}
+  .priv-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
+  .priv-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+  .priv-desc{font-size:13px;color:var(--text2);line-height:1.6;}
+
+  /* ── TIP JAR ── */
+  .tip-wrap{
+    margin-top:40px;
+    background:linear-gradient(135deg,rgba(120,53,15,.15),rgba(17,24,39,.9));
+    border:1px solid rgba(251,191,36,.15);
+    border-radius:24px;padding:52px 36px;
+    text-align:center;
+    position:relative;overflow:hidden;
+  }
+  .tip-wrap::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at 50% 0%,rgba(251,191,36,.06),transparent 60%);
+    pointer-events:none;
+  }
+  .tip-title{
+    font-family:'Syne',sans-serif;
+    font-size:clamp(1.6rem,4vw,2.2rem);
+    font-weight:800;letter-spacing:-1px;
+    margin-bottom:12px;
+  }
+  .tip-sub{
+    color:var(--text2);max-width:420px;
+    margin:0 auto 32px;font-size:15px;line-height:1.7;
+  }
+  .tip-btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+  .tip-btn{
+    background:var(--bg3);border:1px solid var(--border2);
+    color:var(--text);border-radius:12px;
+    padding:11px 22px;font-size:14px;font-weight:500;
+    cursor:pointer;text-decoration:none;
+    font-family:'DM Sans',sans-serif;transition:all .2s;
+  }
+  .tip-btn:hover{border-color:var(--gold2);color:var(--gold);transform:translateY(-2px);}
+  .tip-btn-main{
+    background:linear-gradient(135deg,#78350f,#92400e);
+    border:1px solid rgba(251,191,36,.3);
+    color:var(--gold);font-weight:700;
+  }
+  .tip-btn-main:hover{box-shadow:0 6px 24px rgba(251,191,36,.15);}
+
+  /* ── FOOTER ── */
+  footer{
+    border-top:1px solid var(--border);
+    padding:28px 28px;
+    max-width:1060px;margin:0 auto;
+    display:flex;flex-wrap:wrap;gap:14px;
+    align-items:center;justify-content:space-between;
+  }
+  .footer-logo{
+    font-family:'Syne',sans-serif;
+    font-size:17px;font-weight:800;color:var(--gold);
+    letter-spacing:-.5px;
+  }
+  .footer-links{display:flex;gap:22px;flex-wrap:wrap;}
+  .footer-links a{
+    font-size:13px;color:var(--text3);
+    text-decoration:none;transition:color .2s;
+  }
+  .footer-links a:hover{color:var(--text2);}
+  .footer-copy{font-size:12px;color:var(--text3);}
+
+  /* ── DIVIDER ── */
+  .divider{
+    height:1px;max-width:1060px;margin:0 auto;
+    background:linear-gradient(90deg,transparent,var(--border) 20%,var(--border) 80%,transparent);
+  }
+
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(20px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  @media(max-width:480px){
+    .phone{width:220px;}
+    .s-big{font-size:24px;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-mark">S</div>
+    Steppe
+  </div>
+  <div class="nav-right">
+    <a href="#features" class="btn-nav-ghost">Features</a>
+    <a href="app.html" class="btn-nav-cta">Open App →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="sky-glow"></div>
+  <div class="ground-glow"></div>
+  <div class="horizon-glow"></div>
+
+  <div class="hero-eyebrow">
+    <div class="hero-eyebrow-dot"></div>
+    Free · Private · Open Source
+  </div>
+
+  <h1>
+    Always know<br/>
+    <span class="h1-line2">where you stand</span>
+  </h1>
+
+  <p class="hero-tagline">Your finances. Clear as the horizon.</p>
+
+  <p class="hero-sub">
+    A personal budget tracker that lives entirely on your phone.
+    No accounts. No subscriptions. No company reading your transactions.
+    Just you, your money, and a clear view of where it goes.
+  </p>
+
+  <div class="hero-cta">
+    <a href="app.html" class="btn-hero-primary">Open Steppe →</a>
+    <a href="#install" class="btn-hero-secondary">How to install</a>
+  </div>
+
+  <div class="trust-strip">
+    <div class="trust-item"><div class="trust-rule"></div>No account needed</div>
+    <div class="trust-item"><div class="trust-rule"></div>Works offline</div>
+    <div class="trust-item"><div class="trust-rule"></div>Open source</div>
+    <div class="trust-item"><div class="trust-rule"></div>Free forever</div>
+    <div class="trust-item"><div class="trust-rule"></div>Import bank CSVs</div>
+  </div>
+
+  <!-- Phone mockup -->
+  <div class="mockup-outer">
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="screen">
+        <div class="s-lbl">Spent this month</div>
+        <div class="s-big">$2,847</div>
+        <div class="s-sub">of $4,560 limit · 62% used</div>
+        <div class="s-bar"><div class="s-fill"></div></div>
+        <div class="s-cards">
+          <div class="s-card">
+            <div class="s-card-l">Remaining</div>
+            <div class="s-card-v" style="color:#22c55e">$1,713</div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-l">Income</div>
+            <div class="s-card-v" style="color:#fbbf24">$6,612</div>
+          </div>
+        </div>
+        <div class="s-cat">
+          <div class="s-cat-i">🏠</div>
+          <div style="flex:1;min-width:0;">
+            <div class="s-cat-n">Mortgage</div>
+            <div class="s-cat-b"><div class="s-cat-f" style="width:100%;background:#22c55e;"></div></div>
+          </div>
+          <div class="s-cat-a" style="color:#22c55e">$1,473</div>
+        </div>
+        <div class="s-cat">
+          <div class="s-cat-i">🛒</div>
+          <div style="flex:1;min-width:0;">
+            <div class="s-cat-n">Groceries</div>
+            <div class="s-cat-b"><div class="s-cat-f" style="width:70%;background:#3b82f6;"></div></div>
+          </div>
+          <div class="s-cat-a" style="color:#3b82f6">$210</div>
+        </div>
+        <div class="s-cat">
+          <div class="s-cat-i">🕐</div>
+          <div style="flex:1;min-width:0;">
+            <div class="s-cat-n">Gym <span style="font-size:8px;color:#f59e0b;font-weight:700;">PENDING</span></div>
+            <div class="s-cat-b">
+              <div class="s-cat-f" style="width:40%;background:#3b82f6;"></div>
+              <div style="position:absolute;height:3px;border-radius:999px;background:#f59e0b;opacity:.7;left:40%;width:15%;top:0;"></div>
+            </div>
+          </div>
+          <div class="s-cat-a" style="color:#f59e0b">$165</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- THE NAME -->
+<section class="section" id="story">
+  <div class="s-eyebrow">The Name</div>
+  <h2 class="s-title">Why Steppe?</h2>
+  <p class="s-desc">Every good product has a story. This one is personal.</p>
+  <div class="origin-box">
+    <p class="origin-text">
+      The Kazakh steppe is one of the most open landscapes on earth —
+      flat, vast, and completely unobstructed. <strong>You can see everything. Nothing is hidden. The horizon is always clear.</strong>
+      <br/><br/>
+      That's what we want for your finances. No fog. No surprises.
+      Just a clear view of where your money is, where it's going,
+      and how much ground you have left to cover.
+      <br/><br/>
+      Steppe was built by someone who immigrated from Kazakhstan to Virginia — and whose family
+      gave everything to make sure their son could always know where he stands.
+      <strong>This app is built on that same principle.</strong>
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="s-eyebrow">Features</div>
+  <h2 class="s-title">Everything you need.<br/>Nothing you don't.</h2>
+  <p class="s-desc">Built for people who want honest budget tracking without handing their financial life to a corporation.</p>
+
+  <div class="feat-grid">
+    <div class="feat-card">
+      <span class="feat-icon">📥</span>
+      <div class="feat-title">Import Bank Statements</div>
+      <div class="feat-desc">Drop a CSV from SoFi, Chase, or Bank of America. Transactions are auto-categorized and you review before anything saves.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🧠</span>
+      <div class="feat-title">Learns Your Spending</div>
+      <div class="feat-desc">Assign a category once and the app remembers. Next time that merchant appears, it's already sorted.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🕐</span>
+      <div class="feat-title">Pending Transactions</div>
+      <div class="feat-desc">Log spending as it happens — before your bank statement arrives. Pending items count toward your budget immediately.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">📊</span>
+      <div class="feat-title">Visual Insights</div>
+      <div class="feat-desc">Monthly spending charts, category breakdowns, cash flow trends, and over-budget alerts — all at a glance.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">💰</span>
+      <div class="feat-title">Income Tracking</div>
+      <div class="feat-desc">Track paychecks and other income. See your real net position — income minus spending — every single month.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🔒</span>
+      <div class="feat-title">100% Private</div>
+      <div class="feat-desc">Everything lives in your browser's localStorage. No server ever receives your data. Turn on airplane mode — it still works.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COMPARISON -->
+<section class="section" id="compare" style="padding-top:60px;">
+  <div class="s-eyebrow">Comparison</div>
+  <h2 class="s-title">What makes Steppe different</h2>
+  <p class="s-desc">Most budgeting apps need your data to survive. Steppe doesn't.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th class="col-steppe">Steppe</th>
+          <th>YNAB</th>
+          <th>Monarch</th>
+          <th>Mint / Others</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-feat">Price</td>
+          <td class="col-steppe yes">Free forever</td>
+          <td>$109/year</td>
+          <td>$99/year</td>
+          <td>Free (sells data)</td>
+        </tr>
+        <tr>
+          <td class="col-feat">Account required</td>
+          <td class="col-steppe yes">None</td>
+          <td class="no">Required</td>
+          <td class="no">Required</td>
+          <td class="no">Required</td>
+        </tr>
+        <tr>
+          <td class="col-feat">Data on servers</td>
+          <td class="col-steppe yes">Never</td>
+          <td class="no">Yes</td>
+          <td class="no">Yes</td>
+          <td class="no">Yes</td>
+        </tr>
+        <tr>
+          <td class="col-feat">Works offline</td>
+          <td class="col-steppe yes">Fully</td>
+          <td>Limited</td>
+          <td class="no">No</td>
+          <td class="no">No</td>
+        </tr>
+        <tr>
+          <td class="col-feat">Open source</td>
+          <td class="col-steppe yes">Yes</td>
+          <td class="no">No</td>
+          <td class="no">No</td>
+          <td class="no">No</td>
+        </tr>
+        <tr>
+          <td class="col-feat">Bank CSV import</td>
+          <td class="col-steppe yes">Yes</td>
+          <td class="yes">Yes</td>
+          <td class="yes">Yes</td>
+          <td class="yes">Yes</td>
+        </tr>
+        <tr>
+          <td class="col-feat">Pending transactions</td>
+          <td class="col-steppe yes">Yes</td>
+          <td class="yes">Yes</td>
+          <td class="no">No</td>
+          <td class="no">No</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INSTALL -->
+<section class="section" id="install" style="padding-top:60px;">
+  <div class="s-eyebrow">Install</div>
+  <h2 class="s-title">Add to your<br/>home screen</h2>
+  <p class="s-desc">No App Store. No download. Just tap share and it's on your phone like a native app — forever offline.</p>
+
+  <div class="install-grid">
+    <div class="install-card">
+      <div class="install-platform">🍎 iPhone · Safari</div>
+      <ul class="install-steps-list">
+        <li data-n="1">Open this page in <strong>Safari</strong></li>
+        <li data-n="2">Tap the <strong>Share button</strong> (□↑)</li>
+        <li data-n="3">Tap <strong>"Add to Home Screen"</strong></li>
+        <li data-n="4">Tap <strong>Add</strong></li>
+      </ul>
+    </div>
+    <div class="install-card">
+      <div class="install-platform">🤖 Android · Chrome</div>
+      <ul class="install-steps-list">
+        <li data-n="1">Open this page in <strong>Chrome</strong></li>
+        <li data-n="2">Tap the <strong>menu (⋮)</strong></li>
+        <li data-n="3">Tap <strong>"Add to Home Screen"</strong></li>
+        <li data-n="4">Tap <strong>Add</strong></li>
+      </ul>
+    </div>
+    <div class="install-card">
+      <div class="install-platform">💻 Desktop</div>
+      <ul class="install-steps-list">
+        <li data-n="1">Open in <strong>Chrome or Edge</strong></li>
+        <li data-n="2">Click the <strong>install icon</strong> in the address bar</li>
+        <li data-n="3">Click <strong>"Install Steppe"</strong></li>
+        <li data-n="4">Opens as a standalone app</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PRIVACY -->
+<section class="section" id="privacy" style="padding-top:60px;">
+  <div class="s-eyebrow">Privacy</div>
+  <h2 class="s-title">Your data is yours.<br/>Full stop.</h2>
+  <p class="s-desc">We have no business model that requires reading your finances. Here's exactly how it works.</p>
+
+  <div class="privacy-panel">
+    <div class="priv-item">
+      <span class="priv-icon">📱</span>
+      <div>
+        <div class="priv-title">Stored on your device only</div>
+        <div class="priv-desc">All data lives in your browser's localStorage. It never leaves your phone or computer under any circumstances.</div>
+      </div>
+    </div>
+    <div class="priv-item">
+      <span class="priv-icon">🌐</span>
+      <div>
+        <div class="priv-title">Zero server communication</div>
+        <div class="priv-desc">After the page loads once, no network requests are made. Your transactions never touch a server.</div>
+      </div>
+    </div>
+    <div class="priv-item">
+      <span class="priv-icon">✈️</span>
+      <div>
+        <div class="priv-title">Airplane mode proof</div>
+        <div class="priv-desc">Turn off WiFi and Steppe still works perfectly. If no internet is needed, no data is being sent.</div>
+      </div>
+    </div>
+    <div class="priv-item">
+      <span class="priv-icon">👁️</span>
+      <div>
+        <div class="priv-title">Fully open source</div>
+        <div class="priv-desc">Every line of code is public on GitHub. Anyone can verify there's no hidden data collection. No trust required — just read it.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TIP JAR -->
+<section class="section" id="support" style="padding-top:60px;padding-bottom:80px;">
+  <div class="tip-wrap">
+    <h2 class="tip-title">Built by one person.<br/>Kept free on purpose.</h2>
+    <p class="tip-sub">Steppe is a side project built and maintained solo. If it helps you feel more in control of your finances, a small tip keeps it alive and improving.</p>
+    <div class="tip-btns">
+      <a href="https://ko-fi.com" target="_blank" rel="noopener" class="tip-btn tip-btn-main">☕ Buy me a coffee</a>
+      <a href="https://github.com" target="_blank" rel="noopener" class="tip-btn">⭐ Star on GitHub</a>
+      <a href="https://github.com" target="_blank" rel="noopener" class="tip-btn">🐛 Report an issue</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Steppe</div>
+  <div class="footer-links">
+    <a href="app.html">Open App</a>
+    <a href="#features">Features</a>
+    <a href="#privacy">Privacy</a>
+    <a href="#story">Our Story</a>
+    <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  <div class="footer-copy">Free forever · Your data stays yours</div>
+</footer>
+
+</body>
+</html>
