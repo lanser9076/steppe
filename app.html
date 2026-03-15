@@ -296,7 +296,7 @@ canvas{display:block;width:100%!important;}
     </div>
     <div id="wIncGrp">
       <label class="wlbl">Monthly take-home pay (after tax)</label>
-      <input class="wi big" type="number" id="wInc" placeholder="e.g. 5000" inputmode="decimal" oninput="wCalc()"/>
+      <input class="wi big" type="text" inputmode="decimal" id="wInc" placeholder="e.g. 5000" oninput="wCalc()"/>
       <div id="wSplit" style="display:none">
         <div class="wbig">
           <div class="wb2020"><div class="w2030lbl agrp-needs">Needs</div><div class="w2030amt" id="w50amt">$0</div><div class="w2030sub">50% · essentials</div></div>
@@ -308,7 +308,7 @@ canvas{display:block;width:100%!important;}
     </div>
     <div id="wBudGrp" style="display:none">
       <label class="wlbl">Monthly spending limit</label>
-      <input class="wi big" type="number" id="wBud" placeholder="e.g. 4000" inputmode="decimal" oninput="wCalc()"/>
+      <input class="wi big" type="text" inputmode="decimal" id="wBud" placeholder="e.g. 4000" oninput="wCalc()"/>
     </div>
     <button class="wnextbtn" onclick="wNext()">Next: Allocate →</button>
   </div>
@@ -336,7 +336,7 @@ canvas{display:block;width:100%!important;}
           <input type="text" id="ccName" placeholder="Category name"/>
         </div>
         <div class="ccrow">
-          <input type="number" id="ccAmt" placeholder="Monthly budget ($)" inputmode="decimal"/>
+          <input type="text" inputmode="decimal" id="ccAmt" placeholder="Monthly budget ($)"/>
           <button class="ccsavebtn" onclick="saveCustCat()">Add</button>
         </div>
       </div>
@@ -415,7 +415,7 @@ canvas{display:block;width:100%!important;}
     </div>
     <div style="display:flex;gap:8px;margin-bottom:8px;">
       <div style="position:relative;flex:1;"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#4a70aa;font-size:13px;pointer-events:none;">$</span>
-        <input type="number" id="qcAmt" placeholder="Monthly budget" inputmode="decimal" oninput="checkQCCeiling()" style="width:100%;background:#0d1424;border:1px solid #2a3a5c;border-radius:9px;padding:9px 9px 9px 22px;color:#e8edf5;font-size:14px;outline:none;"/>
+        <input type="text" inputmode="decimal" id="qcAmt" placeholder="Monthly budget" oninput="checkQCCeiling()" style="width:100%;background:#0d1424;border:1px solid #2a3a5c;border-radius:9px;padding:9px 9px 9px 22px;color:#e8edf5;font-size:14px;outline:none;"/>
       </div>
       <button onclick="saveQuickCat()" style="background:#2563eb;color:#fff;border:none;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">Add</button>
       <button onclick="document.getElementById('quickCatForm').style.display='none'" style="background:#1a2540;border:1px solid #2a3a5c;color:#7a9fd4;border-radius:9px;padding:9px 12px;font-size:13px;cursor:pointer;">✕</button>
@@ -453,7 +453,7 @@ canvas{display:block;width:100%!important;}
     <button id="addTabPend" onclick="setAddMode('pending')" style="flex:1;padding:9px;border:none;border-radius:9px;background:transparent;color:#4a70aa;font-size:13px;font-weight:700;cursor:pointer;">🕐 Pending</button>
   </div>
   <div class="ff"><label class="flbl" id="fDlbl">Description</label><input class="fi" id="fD" placeholder="e.g. Wegmans, Netflix…" type="text"/></div>
-  <div class="ff"><label class="flbl">Amount ($)</label><input class="fi big" id="fA" placeholder="0.00" type="number" inputmode="decimal" step="0.01"/></div>
+  <div class="ff"><label class="flbl">Amount ($)</label><input class="fi big" id="fA" placeholder="0.00" type="text" inputmode="decimal"/></div>
   <div class="ff" id="fCatRow"><label class="flbl">Category</label><select class="fsel" id="fCat"></select></div>
   <div class="ff" id="fSrcRow" style="display:none;"><label class="flbl">Source</label>
     <select class="fsel" id="fSrc">
@@ -506,7 +506,7 @@ canvas{display:block;width:100%!important;}
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
       <div style="position:relative;flex:1;">
         <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#4a70aa;font-size:15px;pointer-events:none;">$</span>
-        <input type="number" id="cdBudInput" inputmode="decimal" placeholder="0"
+        <input type="text" inputmode="decimal" id="cdBudInput" placeholder="0"
           style="width:100%;background:#0d1424;border:1px solid #2a3a5c;border-radius:10px;padding:11px 12px 11px 26px;color:#e8edf5;font-size:18px;font-weight:700;outline:none;"/>
       </div>
       <button onclick="saveCatBudget()" style="background:#2563eb;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;">Save</button>
@@ -529,7 +529,7 @@ canvas{display:block;width:100%!important;}
     <div style="display:flex;gap:8px;align-items:center;">
       <div style="position:relative;flex:1;">
         <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#4a70aa;font-size:15px;pointer-events:none;">$</span>
-        <input type="number" id="ceilInput" inputmode="decimal" placeholder="e.g. 5000"
+        <input type="text" inputmode="decimal" id="ceilInput" placeholder="e.g. 5000"
           style="width:100%;background:#111827;border:1px solid #2a3a5c;border-radius:11px;padding:12px 12px 12px 28px;color:#e8edf5;font-size:18px;font-weight:700;outline:none;"/>
       </div>
       <button onclick="saveCeiling()" style="background:#2563eb;color:#fff;border:none;border-radius:11px;padding:13px 20px;font-size:14px;font-weight:700;cursor:pointer;">Save</button>
@@ -933,7 +933,7 @@ function renderAllocList(){
       html+=`<div class="acat">
         <div class="aci">${c.icon}</div>
         <div class="acn">${c.name}</div>
-        <div class="acamt"><span>$</span><input type="number" value="${c.budget||""}" placeholder="0" inputmode="decimal"
+        <div class="acamt"><span>$</span><input type="text" inputmode="decimal" value="${c.budget||""}" placeholder="0"
           data-catid="${c.id}" oninput="updateWizTotal()"/></div>
         ${c.isCustom?`<button onclick="delCustCat('${c.id}')" style="background:none;border:none;color:#4a70aa;cursor:pointer;font-size:14px;flex-shrink:0;">✕</button>`:""}
       </div>`;
