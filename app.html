@@ -712,6 +712,7 @@ function tkey(m){return "t_"+m;}
 function loadT(m){return sget(tkey(m),[]);}
 function saveT(m,t){sset(tkey(m),t);}
 function ikey(m){return "inc_"+m;}
+function parseAmt(v){return parseFloat(String(v).replace(",","."));}
 function loadInc(m){return sget(ikey(m),[]);}
 function saveInc(m,arr){sset(ikey(m),arr);}
 function totalInc(m){return loadInc(m).reduce((a,e)=>a+e.amount,0);}
@@ -728,7 +729,7 @@ function loadPending(){return sget("pending",[]);}
 function savePending(arr){sset("pending",arr);}
 function addPendingTx(desc,amount,catId,date){
   const arr=loadPending();
-  arr.unshift({id:"p_"+Date.now(),desc,amount:parseFloat(amount),catId,date,createdAt:Date.now()});
+  arr.unshift({id:"p_"+Date.now(),desc,amount:parseAmt(amount),catId,date,createdAt:Date.now()});
   savePending(arr);
 }
 function deletePendingTx(id){savePending(loadPending().filter(p=>p.id!==id));}
@@ -789,6 +790,7 @@ function allMonths(){
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
     if(k&&k.startsWith(PFX+"t_")){const m=k.slice((PFX+"t_").length);if(/^\d{4}-\d{2}$/.test(m))keys.add(m);}
+    if(k&&k.startsWith(PFX+"inc_")){const m=k.slice((PFX+"inc_").length);if(/^\d{4}-\d{2}$/.test(m))keys.add(m);}
   }
   return [...keys].sort();
 }
@@ -878,8 +880,8 @@ function showWizStep(i){
 }
 function wNext(){
   if(wizStep===1){
-    const inc=parseFloat(document.getElementById("wInc").value)||0;
-    const bud=parseFloat(document.getElementById("wBud").value)||0;
+    const inc=parseAmt(document.getElementById("wInc").value)||0;
+    const bud=parseAmt(document.getElementById("wBud").value)||0;
     const val=wizMode==="income"?inc:bud;
     if(val<=0){showToast("Please enter a valid amount","w");return;}
     const limit=wizMode==="income"?inc:bud;
@@ -904,7 +906,7 @@ function wMode(m){
   document.getElementById("wtBud").className="wtb"+(m==="budget"?" act":"");
 }
 function wCalc(){
-  const inc=parseFloat(document.getElementById("wInc")?.value)||0;
+  const inc=parseAmt(document.getElementById("wInc")?.value)||0;
   const sp=document.getElementById("wSplit");
   if(inc>0&&wizMode==="income"){
     sp.style.display="block";
@@ -942,7 +944,7 @@ function renderAllocList(){
 }
 function updateWizTotal(){
   let total=0;
-  document.querySelectorAll("[data-catid]").forEach(inp=>{total+=parseFloat(inp.value)||0;});
+  document.querySelectorAll("[data-catid]").forEach(inp=>{total+=parseAmt(inp.value)||0;});
   const setup=sget("setup",{limit:0});
   const lim=setup.limit||0;
   const rem=lim-total;
@@ -955,7 +957,7 @@ function saveAllocFromForm(){
   const cats=getCats();
   document.querySelectorAll("[data-catid]").forEach(inp=>{
     const c=cats.find(x=>x.id===inp.dataset.catid);
-    if(c)c.budget=parseFloat(inp.value)||0;
+    if(c)c.budget=parseAmt(inp.value)||0;
   });
   saveCats(cats);
 }
@@ -963,7 +965,7 @@ function showCustForm(){document.getElementById("custCatForm").style.display="bl
 function saveCustCat(){
   const icon=document.getElementById("ccIcon").value.trim()||"📦";
   const name=document.getElementById("ccName").value.trim();
-  const amt=parseFloat(document.getElementById("ccAmt").value)||0;
+  const amt=parseAmt(document.getElementById("ccAmt").value)||0;
   if(!name){showToast("Enter a category name","w");return;}
   const cats=getCats();
   const id="c_"+Date.now();
@@ -995,7 +997,7 @@ function finishWiz(){
   showToast(wasRerun?"Settings updated! ✅":"Setup complete! 🎉");
 }
 function saveCeiling(){
-  const val=parseFloat(document.getElementById("ceilInput").value)||0;
+  const val=parseAmt(document.getElementById("ceilInput").value)||0;
   if(val<=0){showToast("Enter a valid amount","w");return;}
   const setup=sget("setup",{});setup.limit=val;sset("setup",setup);
   const alloc=getCats().reduce((a,c)=>a+c.budget,0);
@@ -1156,7 +1158,7 @@ function setAddMode(mode){
   document.getElementById("addSttl").textContent=isInc?"Add Income":isPend?"Add Pending":"Add Expense";
 }
 function addT(){
-  const desc=document.getElementById("fD").value.trim(),amt=parseFloat(document.getElementById("fA").value);
+  const desc=document.getElementById("fD").value.trim(),amt=parseAmt(document.getElementById("fA").value);
   const date=document.getElementById("fDt").value;
   if(!desc||isNaN(amt)||amt<=0||!date){showToast("Fill in all fields","w");return;}
   const m=date.slice(0,7);
@@ -1645,7 +1647,7 @@ function toggleBudgetEdit(){
   }
 }
 function saveCatBudget(){
-  const val=parseFloat(document.getElementById("cdBudInput").value)||0;
+  const val=parseAmt(document.getElementById("cdBudInput").value)||0;
   const cats=getCats();
   const cat=cats.find(c=>c.id===selCat);
   if(!cat)return;
@@ -1672,7 +1674,7 @@ function setQCGroup(g){
   document.querySelectorAll(".qcgrpbtn").forEach(b=>b.classList.toggle("act",b.dataset.g===g));
 }
 function checkQCCeiling(){
-  const amt=parseFloat(document.getElementById("qcAmt").value)||0;
+  const amt=parseAmt(document.getElementById("qcAmt").value)||0;
   const ceiling=sget("setup",{}).limit||0;
   if(!ceiling){document.getElementById("qcCeilWarn").style.display="none";return;}
   const currentTotal=getCats().reduce((a,c)=>a+c.budget,0);
@@ -1681,7 +1683,7 @@ function checkQCCeiling(){
 function saveQuickCat(){
   const icon=document.getElementById("qcIcon").value.trim()||"📦";
   const name=document.getElementById("qcName").value.trim();
-  const amt=parseFloat(document.getElementById("qcAmt").value)||0;
+  const amt=parseAmt(document.getElementById("qcAmt").value)||0;
   if(!name){showToast("Enter a category name","w");return;}
   const cats=getCats();
   if(cats.find(c=>c.name.toLowerCase()===name.toLowerCase())){showToast("Category already exists","w");return;}
@@ -1700,7 +1702,7 @@ function saveQuickCat(){
 
 // ── EXPORT / IMPORT BACKUP ────────────────────────────────────────────────
 function exportData(){
-  const data={version:1,exported:new Date().toISOString(),cats:getCats(),maps:getMaps(),setup:sget("setup",{})};
+  const data={version:1,exported:new Date().toISOString(),cats:getCats(),maps:getMaps(),setup:sget("setup",{}),pending:loadPending()};
   data.transactions={};data.income={};
   allMonths().forEach(m=>{data.transactions[m]=loadT(m);data.income[m]=loadInc(m);});
   const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
