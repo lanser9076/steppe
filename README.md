@@ -4,6 +4,9 @@
 
 Steppe is a free, completely private budget tracker that runs entirely in your browser. Your financial data never leaves your device.
 
+Netlify link:
+https://steppeapp.netlify.app
+
 ## Features
 
 - **Budget tracking** — Set monthly budgets across custom categories with the 50/30/20 rule as a starting point
