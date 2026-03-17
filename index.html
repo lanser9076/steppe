@@ -59,25 +59,22 @@
     font-size:14px;font-weight:800;
     color:var(--green2);
   }
-  .logo-tag{
-    font-size:10px;font-weight:500;
-    color:var(--text3);letter-spacing:.3px;
-    margin-left:4px;white-space:nowrap;
-  }
-  .nav-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
-  .nav-link{
-    color:var(--text3);font-size:12px;font-weight:500;
-    text-decoration:none;transition:color .2s;white-space:nowrap;
-  }
-  .nav-link:hover{color:var(--text2);}
+  .nav-right{display:flex;gap:8px;align-items:center;}
   .nav-sub{
     position:fixed;top:52px;left:0;right:0;z-index:99;
-    padding:6px 24px;
-    display:flex;align-items:center;justify-content:center;gap:20px;
+    padding:8px 24px;
+    display:flex;align-items:center;justify-content:center;gap:24px;
     background:rgba(17,24,39,.95);
     backdrop-filter:blur(20px);
     border-bottom:1px solid var(--border);
+    font-size:12px;
   }
+  .nav-sub a{
+    color:var(--text3);text-decoration:none;
+    font-weight:500;transition:color .2s;
+  }
+  .nav-sub a:hover{color:var(--text2);}
+  .nav-sub span{color:var(--text3);font-size:10px;}
   .btn-ghost{
     background:transparent;border:1px solid var(--border2);
     color:var(--text2);border-radius:10px;
@@ -364,16 +361,17 @@
   <a href="/" class="logo">
     <div class="logo-mark">S</div>
     Steppe
-    <span class="logo-tag">Free & Open Source</span>
   </a>
   <div class="nav-right">
+    <a href="#features" class="btn-ghost">Features</a>
     <a href="app.html" class="btn-cta">Open App →</a>
   </div>
 </nav>
 <div class="nav-sub">
-  <a href="https://github.com/lanser9076/steppe" target="_blank" rel="noopener" class="nav-link">GitHub</a>
-  <a href="https://github.com/lanser9076/steppe/issues" target="_blank" rel="noopener" class="nav-link">Report Issue</a>
-  <a href="https://ko-fi.com/lanser9076" target="_blank" rel="noopener" class="nav-link">Tip</a>
+  <span>Free & Open Source</span>
+  <a href="https://github.com/lanser9076/steppe" target="_blank" rel="noopener">GitHub</a>
+  <a href="https://github.com/lanser9076/steppe/issues" target="_blank" rel="noopener">Report Issue</a>
+  <a href="https://ko-fi.com/lanser9076" target="_blank" rel="noopener">Tip</a>
 </div>
 
 <!-- HERO -->
