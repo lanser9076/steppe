@@ -70,7 +70,14 @@
     text-decoration:none;transition:color .2s;white-space:nowrap;
   }
   .nav-link:hover{color:var(--text2);}
-  .nav-sep{width:1px;height:16px;background:var(--border);flex-shrink:0;}
+  .nav-sub{
+    position:fixed;top:52px;left:0;right:0;z-index:99;
+    padding:6px 24px;
+    display:flex;align-items:center;justify-content:center;gap:20px;
+    background:rgba(17,24,39,.95);
+    backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border);
+  }
   .btn-ghost{
     background:transparent;border:1px solid var(--border2);
     color:var(--text2);border-radius:10px;
@@ -94,7 +101,7 @@
     min-height:100vh;
     display:flex;flex-direction:column;
     align-items:center;justify-content:center;
-    padding:100px 24px 60px;
+    padding:120px 24px 60px;
     text-align:center;
     position:relative;overflow:hidden;
   }
@@ -360,13 +367,14 @@
     <span class="logo-tag">Free & Open Source</span>
   </a>
   <div class="nav-right">
-    <a href="https://github.com/lanser9076/steppe" target="_blank" rel="noopener" class="nav-link">GitHub</a>
-    <a href="https://github.com/lanser9076/steppe/issues" target="_blank" rel="noopener" class="nav-link">Report Issue</a>
-    <a href="https://ko-fi.com/lanser9076" target="_blank" rel="noopener" class="nav-link">Tip</a>
-    <div class="nav-sep"></div>
     <a href="app.html" class="btn-cta">Open App →</a>
   </div>
 </nav>
+<div class="nav-sub">
+  <a href="https://github.com/lanser9076/steppe" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+  <a href="https://github.com/lanser9076/steppe/issues" target="_blank" rel="noopener" class="nav-link">Report Issue</a>
+  <a href="https://ko-fi.com/lanser9076" target="_blank" rel="noopener" class="nav-link">Tip</a>
+</div>
 
 <!-- HERO -->
 <section class="hero">
