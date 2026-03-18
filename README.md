@@ -1,6 +1,11 @@
 # Steppe
 
-**Always know where you stand. No accounts, no servers, no subscriptions.**
+**Track your monthly spending. Budget your needs. No accounts no subscriptions.**
+
+Any feedback is welcomed! Please don't hesitate to contact to add any features or report bugs. 
+Always happy to help and make this tool as useful as it can be for everyone!
+You can either report an issue through github to let me know of anything you would like to add
+or contact me through reddit my username is u/nanoMiniPump 
 
 Steppe is a free, completely private budget tracker that runs entirely in your browser. Your financial data never leaves your device.
 
